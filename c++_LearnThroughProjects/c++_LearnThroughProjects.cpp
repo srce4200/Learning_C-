@@ -1,11 +1,18 @@
 
 #include <iostream>
 #include <ctime>
+#include <fstream>
+#include <string>
+
+void ShraniNaDat(int stSekund, int stPoskusov);
 
 int main()
 {
     std::cout << "\nWelcome to the Number Guessing Game!";
     while (true) {
+        time_t curTime;
+        time(&curTime);
+
         srand(time(0));
         int randomNumber = rand()%100+1;
 
@@ -57,6 +64,11 @@ int main()
 
             if (guess == randomNumber) {
                 std::cout << "\nCongratulations! You guessed the correct number in" << (i+1) << "attempts.";
+                time_t newTime;
+                time(&newTime);
+                std::cout << "\nPorabil si " << newTime - curTime<< "sekund";
+                ShraniNaDat(newTime - curTime, i + 1);
+
                 break;
             }
 
@@ -74,4 +86,29 @@ int main()
 
         }
     }
+
+}
+void ShraniNaDat(int stSekund, int stPoskusov){
+        std::string readLine;
+        std::ifstream MyRFile("NumberGuesingGameHighcore.txt");
+    if (MyRFile.good()) {
+        int stPosk2 = -1;
+        int stSek2 = -1;
+        getline(MyRFile, readLine);
+        int indxVejice = readLine.find(',');
+        stSek2 = stoi(readLine.substr(0, indxVejice));
+        stPosk2 = stoi(readLine.substr(indxVejice + 1, readLine.length()));
+        //MyRFile.close;
+        if (stPoskusov < stPosk2 && stSekund < stSek2) {
+
+            std::ofstream MyRFile("NumberGuesingGameHighcore.txt");;
+            MyRFile << stSekund << ',' << stPoskusov;
+        }
+        MyRFile.close();
+    }
+    else {
+        std::ofstream MyRFile("NumberGuesingGameHighcore.txt");;
+        MyRFile << stSekund << ',' << stPoskusov;
+        MyRFile.close();
+    }    
 }
